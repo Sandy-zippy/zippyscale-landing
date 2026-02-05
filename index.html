@@ -4577,8 +4577,11 @@
             });
         });
 
+        // Google Sheets Web App URL - Replace with your deployed URL
+        const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+
         // Form submission
-        funnelForm.addEventListener('submit', function(e) {
+        funnelForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
             if (!validateStep(4)) return;
@@ -4592,23 +4595,31 @@
             this.querySelectorAll('input[name="challenges"]:checked').forEach(cb => {
                 challenges.push(cb.value);
             });
-            data.challenges = challenges;
+            data.challenges = challenges.join(', ');
+
+            // Add timestamp
+            data.timestamp = new Date().toISOString();
+            data.source = 'zippyscale.in';
 
             console.log('Growth Audit Submission:', data);
 
-            // Show success state
+            // Show success state immediately for better UX
             showStep('success');
-
-            // Update progress to 100%
             progressFill.style.width = '100%';
             stepIndicators.forEach(indicator => indicator.classList.add('completed'));
 
-            // Here you would typically send to your backend/webhook
-            // fetch('YOUR_WEBHOOK_URL', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify(data)
-            // });
+            // Send to Google Sheets
+            try {
+                await fetch(GOOGLE_SHEET_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                console.log('Data sent to Google Sheets');
+            } catch (error) {
+                console.error('Error sending to Google Sheets:', error);
+            }
         });
 
         // Add shake animation
@@ -4624,16 +4635,36 @@
 
         // Legacy form handling for other forms
         document.querySelectorAll('form:not(#growth-audit-funnel)').forEach(form => {
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const formData = new FormData(this);
-                console.log('Form submitted:', Object.fromEntries(formData));
+                const data = Object.fromEntries(formData);
+
+                // Add metadata
+                data.timestamp = new Date().toISOString();
+                data.source = 'zippyscale.in';
+                data.form_type = 'quick_contact';
+
+                console.log('Form submitted:', data);
 
                 const btn = this.querySelector('.form-submit, button[type="submit"]');
                 if (btn) {
                     const originalText = btn.innerHTML;
                     btn.innerHTML = '✓ Submitted!';
                     btn.style.background = '#22c55e';
+
+                    // Send to Google Sheets
+                    try {
+                        await fetch(GOOGLE_SHEET_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        });
+                        console.log('Data sent to Google Sheets');
+                    } catch (error) {
+                        console.error('Error sending to Google Sheets:', error);
+                    }
 
                     setTimeout(() => {
                         btn.innerHTML = originalText;
