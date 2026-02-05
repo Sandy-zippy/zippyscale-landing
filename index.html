@@ -1142,6 +1142,7 @@
             scroll-behavior: smooth;
             font-size: 16px;
             scroll-padding-top: 100px;
+            overflow-x: hidden;
         }
 
         body {
@@ -1153,6 +1154,8 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             overflow-x: hidden;
+            width: 100%;
+            max-width: 100vw;
         }
 
         ::selection {
@@ -1370,6 +1373,29 @@
             display: flex;
             align-items: center;
             gap: var(--space-3);
+            text-decoration: none;
+        }
+
+        .logo-img {
+            height: 45px;
+            width: auto;
+            transition: transform var(--duration-fast) var(--ease-out);
+        }
+
+        .logo:hover .logo-img {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .logo-img {
+                height: 36px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-img {
+                height: 32px;
+            }
         }
 
         .logo-mark {
@@ -3256,6 +3282,41 @@
 
             .stat-value {
                 font-size: 2rem;
+            }
+        }
+
+        /* Mobile fixes for decorative elements */
+        @media (max-width: 768px) {
+            .radar-container,
+            .status-online,
+            .warp-container,
+            .circuit-overlay {
+                display: none !important;
+            }
+
+            #matrix-canvas {
+                opacity: 0.02;
+            }
+
+            .container {
+                padding: 0 var(--space-4);
+            }
+
+            .nav-cta {
+                padding: var(--space-3) var(--space-4);
+                font-size: 0.8125rem;
+            }
+
+            .hero h1 {
+                font-size: clamp(2rem, 8vw, 3rem);
+            }
+
+            .hero-tagline {
+                font-size: 1rem;
+            }
+
+            .section-header h2 {
+                font-size: clamp(1.75rem, 6vw, 2.5rem);
             }
         }
     </style>
